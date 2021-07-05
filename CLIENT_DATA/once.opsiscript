@@ -1,0 +1,73 @@
+[Actions]
+requiredWinstVersion >= "4.11.4.3"
+ScriptErrorMessages = false
+
+DefVar $SetupType$
+DefVar $ProductId$ 
+DefVar $Setupfile$ 
+DefVar $InstallDir$
+DefVar $MinimumSpace$
+DefVar $ExitCode$
+DefVar $ErrorMsg$
+DefVar $LicenseRequired$
+DefVar $LicenseKey$
+DefVar $LicensePool$
+DefVar $MsiId$
+DefVar $NsisInstallBatch$
+DefVar $LogDir$
+DefVar $BiosPW$
+DefVar $BiosWOL$
+
+Set $LogDir$ = "%opsiLogDir%"
+
+
+; ----------------------------------------------------------------
+; ----------------------------------------------------------------
+; $ProductId$ is the name of the product in opsi, only lower letters, no umlauts, no white spaces, use '-' as a seperator
+Set $ProductId$       = "teska-fujitsu-bios"
+; the path where we find the product after the installation
+Set $LicenseRequired$ = "false"
+Set $LicensePool$     = "p_" + $ProductId$
+Set $MinimumSpace$    = "200 MB"
+
+
+; ----------------------------------------------------------------
+; ----------------------------------------------------------------
+
+if not(HasMinimumSpace ("%SystemDrive%", $MinimumSpace$))
+   LogError "Not enough space on %SystemDrive%, " + $MinimumSpace$ + " on drive %SystemDrive% needed for " + $ProductId$
+   isFatalError "No Space"
+   ; Stop process and set installation status to failed
+else
+   
+   Message "Installing " + $ProductId$ + " ..."
+   Set $BiosPW$ = GetProductProperty("biospassword","123456") 
+   Set $BiosWOL$ = GetProductProperty("bioswol","ja")
+   if $LicenseRequired$ = "true"
+      comment "Licensing required, reserve license and get license key"
+      Sub_get_licensekey
+   endif
+
+   
+   comment "Start fixing defender"
+   ChangeDirectory "%SCRIPTPATH%"
+   ;----------------------------------------------
+   winbatch_execute
+   if $BiosWOL$ = "ja"
+     comment "Enable WOL"
+     winbatch_wol
+   endif
+   ;----------------------------------------------
+endif
+
+
+
+; ----------------------------------------------------------------
+; install section
+; ----------------------------------------------------------------
+
+[winbatch_execute]
+"%SCRIPTPATH%\files\BiosSet.exe" /NEWPWD=$BiosPW$
+
+[winbatch_wol]
+"%SCRIPTPATH%\files\BiosSet.exe" /WOL=ON /PWD=$BiosPW$

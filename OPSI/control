@@ -1,0 +1,40 @@
+[Package]
+version: 2
+depends: 
+
+[Product]
+type: localboot
+id: teska-fujitsu-bios
+name: teska-fujitsu-bios
+description: Sets Settings to Bios of FJC
+advice: 
+version: 1.0
+priority: 0
+licenseRequired: False
+productClasses: 
+setupScript: 
+uninstallScript: 
+updateScript: 
+alwaysScript: 
+onceScript: once.opsiscript
+customScript: 
+userLoginScript: 
+
+[ProductProperty]
+type: unicode
+name: biospassword
+multivalue: False
+editable: True
+description: Bios Password
+values: ["123456"]
+default: ["123456"]
+
+[ProductProperty]
+type: unicode
+name: bioswol
+multivalue: False
+editable: True
+description: Enable WOL
+values: ["ja", "nein"]
+default: ["ja"]
+
