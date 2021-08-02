@@ -38,3 +38,13 @@ description: Enable WOL
 values: ["ja", "nein"]
 default: ["ja"]
 
+
+[ProductProperty]
+type: unicode
+name: biosfree
+multivalue: False
+editable: True
+description: Free Field for adding own stuff
+values: ["biosset.exe /ZEROWATT=OFF"]
+default: [""]
+

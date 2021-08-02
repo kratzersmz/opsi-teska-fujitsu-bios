@@ -17,6 +17,7 @@ DefVar $NsisInstallBatch$
 DefVar $LogDir$
 DefVar $BiosPW$
 DefVar $BiosWOL$
+DefVar $BiosFree$
 
 Set $LogDir$ = "%opsiLogDir%"
 
@@ -43,6 +44,7 @@ else
    Message "Installing " + $ProductId$ + " ..."
    Set $BiosPW$ = GetProductProperty("biospassword","123456") 
    Set $BiosWOL$ = GetProductProperty("bioswol","ja")
+   Set $BiosFree$ = GetProductProperty("biosfree", "nein")
    if $LicenseRequired$ = "true"
       comment "Licensing required, reserve license and get license key"
       Sub_get_licensekey
@@ -57,6 +59,10 @@ else
      comment "Enable WOL"
      winbatch_wol
    endif
+
+   if not ($BiosFree$ = "nein")
+      comment "Führe eigene Befehle aus..."
+      winbatch_free
    ;----------------------------------------------
 endif
 
@@ -71,3 +77,7 @@ endif
 
 [winbatch_wol]
 "%SCRIPTPATH%\files\BiosSet.exe" /WOL=ON /PWD=$BiosPW$
+
+
+[winbatch_free]
+"%SCRIPTPATH%\files\$BiosFree$"
